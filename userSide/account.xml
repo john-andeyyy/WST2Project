@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<Accounts>
+    <account id="1">
+        <username>default</username>
+        <password>default</password>
+        <name>default</name>
+        <email>default@gmail.com</email>
+        <profilepic>../userSide/profile_pics/default.png</profilepic>
+    </account>
+    <account id="2">
+        <username>12213213213</username>
+        <password>12213213213</password>
+        <name>12213213213</name>
+        <email>12213213213@gmail.com</email>
+        <profilepic>../userSide/profile_pics/default.png</profilepic>
+        <badge>../Badges/lesson1.png</badge>
+    </account>
+    <account id="3">
+        <username>122</username>
+        <password>122</password>
+        <name>1222</name>
+        <email>1@gmail.com</email>
+        <profilepic>../userSide/profile_pics/default.png</profilepic>
+    </account>
+    <account id="4">
+        <username>newnobadge1</username>
+        <password>newnobadge1</password>
+        <name>newnobadge1</name>
+        <email>newnobadge1@gmail.com</email>
+        <profilepic>../userSide/profile_pics/default.png</profilepic>
+    <badge>../Badges/lesson1.png</badge></account>
+</Accounts>

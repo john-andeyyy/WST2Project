@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Account Table</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="./style/Manageusers.css" />
+    <style>
+        .passed {
+            font-weight: bold;
+            color: green;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>List of users</h1>
+    <div>
+        <label for="lessonSelect">Show:</label>
+        <select id="lessonSelect">
+            <option value="all">All</option>
+        </select>
+    </div>
+
+    <div id="dateFilter" class="hidden">
+        <label for="dateFilterSelect">Filter by Date:</label>
+        <select id="dateFilterSelect">
+            <option value="seeAll">All</option>
+            <option value="day">Day</option>
+            <option value="week">Week</option>
+            <option value="month">Month</option>
+            <option value="year">Year</option>
+            <option value="custom">Custom Date</option>
+        </select>
+        <input type="date" id="customDatePicker" class="hidden">
+    </div>
+
+    <table id="accountTable">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+
+<script>
+    $(document).ready(function () {
+        fetchLessonCount();
+    });
+
+    function fetchLessonCount() {
+        $.ajax({
+            url: "../AdminPHP/GetLessonCount.php",
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+                if (response.status === "success") {
+                    populateLessonSelect(response.lessonCount);
+                    fetchAccounts(response.lessonCount);
+                } else {
+                    console.error("Error fetching lesson count");
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.error("Error:", errorThrown);
+                alert("An error occurred while fetching lesson count.");
+            }
+        });
+    }
+
+    function populateLessonSelect(lessonCount) {
+        const lessonSelect = $("#lessonSelect");
+
+        for (let i = 1; i <= lessonCount; i++) {
+            lessonSelect.append(`<option value="lesson${i}">Lesson ${i} Only</option>`);
+        }
+
+        lessonSelect.on("change", function () {
+            const lessonSelected = $(this).val();
+            if (lessonSelected === "all") {
+                $("#dateFilter").addClass("hidden");
+                hideDateCompletedColumns();
+            } else {
+                $("#dateFilter").removeClass("hidden");
+                showDateCompletedColumns();
+            }
+            applyFilters();
+        });
+
+        $("#dateFilterSelect").on("change", function () {
+            if ($(this).val() === "custom") {
+                $("#customDatePicker").removeClass("hidden");
+            } else {
+                $("#customDatePicker").addClass("hidden");
+                applyFilters();
+            }
+        });
+
+        $("#customDatePicker").on("change", function () {
+            applyFilters();
+        });
+    }
+
+    function fetchAccounts(lessonCount) {
+        $.ajax({
+            url: "../AdminPHP/GetAllUsers.php",
+            method: "GET",
+            dataType: "xml",
+            success: function (response) {
+                const accounts = $(response).find("account");
+                const tableBody = $("#accountTable tbody");
+
+                // Clear the table before appending new rows
+                tableBody.empty();
+
+                // Create table rows
+                accounts.each(function () {
+                    const id = $(this).attr("id");
+                    const username = $(this).find("username").text();
+                    const name = $(this).find("name").text();
+                    const email = $(this).find("email").text();
+
+                    let row = `
+                        <tr>
+                            <td>${id}</td>
+                            <td>${username}</td>
+                            <td>${name}</td>
+                            <td>${email}</td>
+                    `;
+                    for (let i = 1; i <= lessonCount; i++) {
+                        const lessonAssessmentScore = $(this).find(`lesson${i} > assessment`).text() || "N/A";
+                        const lessonDateCompleted = $(this).find(`lesson${i} > dateCompleted`).text() || "N/A";
+                        const lessonQuizScore = $(this).find(`lesson${i} > quizScore`).text() || "N/A";
+
+                        row += `
+                            <td class="lesson${i}">${lessonAssessmentScore}</td>
+                            <td class="lesson${i}Date hidden">${lessonDateCompleted}</td>
+                            <td class="lesson${i}QuizScore">${lessonQuizScore}</td>
+                        `;
+                    }
+                    row += `</tr>`;
+                    tableBody.append(row);
+                });
+
+                applyFilters();
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.error("Error:", errorThrown);
+                alert("An error occurred while fetching accounts.");
+            },
+        });
+    }
+
+    function applyFilters() {
+        const lessonSelected = $("#lessonSelect").val();
+        const dateFilterSelected = $("#dateFilterSelect").val();
+        const customDate = $("#customDatePicker").val();
+        const now = new Date();
+
+        if (lessonSelected !== "all") {
+            // Only show the columns for the selected lesson
+            $("#accountTable thead th").hide();
+            $("#accountTable thead th:nth-child(1), #accountTable thead th:nth-child(2), #accountTable thead th:nth-child(3), #accountTable thead th:nth-child(4)").show();
+            $(`#accountTable thead th.${lessonSelected}`).show();
+            $(`#accountTable thead th.${lessonSelected}Date`).show();
+            $(`#accountTable thead th.${lessonSelected}QuizScore`).show();
+            $("#accountTable tbody td").hide();
+            $("#accountTable tbody td:nth-child(1), #accountTable tbody td:nth-child(2), #accountTable tbody td:nth-child(3), #accountTable tbody td:nth-child(4)").show();
+            $(`#accountTable tbody td.${lessonSelected}`).show();
+            $(`#accountTable tbody td.${lessonSelected}Date`).show();
+            $(`#accountTable tbody td.${lessonSelected}QuizScore`).show();
+        } else {
+            // For the "All" option, hide the date completed columns
+            hideDateCompletedColumns();
+        }
+
+        $("#accountTable tbody tr").each(function () {
+        const row = $(this);
+        let showRow = true;
+
+        if (lessonSelected !== "all") {
+            const dateCell = row.find(`.${lessonSelected}Date`);
+            const dateCompleted = new Date(dateCell.text());
+            switch (dateFilterSelected) {
+                case "day":
+                    showRow = isSameDay(now, dateCompleted);
+                    break;
+                case "week":
+                    showRow = isSameWeek(now, dateCompleted);
+                    break;
+                case "month":
+                    showRow = isSameMonth(now, dateCompleted);
+                    break;
+                case "year":
+                    showRow = isSameYear(now, dateCompleted);
+                    break;
+                case "custom":
+                    const customDateSelected = new Date(customDate);
+                    showRow = isSameDay(customDateSelected, dateCompleted);
+                    break;
+                case "seeAll":
+                    showRow = true;
+                    break;
+            }
+        }
+
+        row.toggle(showRow);
+    });
+}
+
+    function isSameDay(date1, date2) {
+        return date1.toDateString() === date2.toDateString();
+    }
+
+    function isSameWeek(date1, date2) {
+        const startOfWeek = getStartOfWeek(date1);
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(endOfWeek.getDate() + 6);
+        return date2 >= startOfWeek && date2 <= endOfWeek;
+    }
+
+    function isSameMonth(date1, date2) {
+        return date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth();
+    }
+
+    function isSameYear(date1, date2) {
+        return date1.getFullYear() === date2.getFullYear();
+    }
+
+    function getStartOfWeek(date) {
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+        return new Date(date.setDate(diff));
+    }
+
+    function hideDateCompletedColumns() {
+    $("#accountTable thead th[class$='Date']").hide();
+    $("#accountTable thead th[class$='QuizScore']").hide();
+    $("#accountTable tbody td[class$='Date']").hide();
+    $("#accountTable tbody td[class$='QuizScore']").hide();
+}
+
+function showDateCompletedColumns() {
+    $("#accountTable thead th[class$='Date']").show();
+    $("#accountTable thead th[class$='QuizScore']").show();
+    $("#accountTable tbody td[class$='Date']").show();
+    $("#accountTable tbody td[class$='QuizScore']").show();
+}
+
+function fetchAccounts(lessonCount) {
+    $.ajax({
+        url: "../AdminPHP/GetAllUsers.php",
+        method: "GET",
+        dataType: "xml",
+        success: function (response) {
+            const accounts = $(response).find("account");
+            const tableBody = $("#accountTable tbody");
+
+            // Clear the table before appending new rows
+            tableBody.empty();
+
+            // Create table headers dynamically
+            let headerRowAll = `
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Email</th>
+            `;
+            for (let i = 1; i <= lessonCount; i++) {
+                headerRowAll += `
+                    <th class="lesson${i}">Lesson ${i} Assessment Score</th>
+                    <th class="lesson${i}QuizScore">Lesson ${i} Quiz Score</th>
+                    <th class="lesson${i}Date hidden">Lesson ${i} Date Completed</th>
+                `;
+            }
+            headerRowAll += `</tr>`;
+            $("#accountTable thead").html(headerRowAll);
+
+            // Populate table rows
+            accounts.each(function () {
+                const id = $(this).attr("id");
+                const username = $(this).find("username").text();
+                const name = $(this).find("name").text();
+                const email = $(this).find("email").text();
+
+                let row = `
+                    <tr>
+                        <td>${id}</td>
+                        <td>${username}</td>
+                        <td>${name}</td>
+                        <td>${email}</td>
+                `;
+                for (let i = 1; i <= lessonCount; i++) {
+                    const lessonAssessmentScore = $(this).find(`lesson${i} > assessment`).text() || "N/A";
+                    const lessonQuizScore = $(this).find(`lesson${i} > quiz`).text() || "N/A";
+                    const lessonDateCompleted = $(this).find(`lesson${i} > dateCompleted`).text() || "N/A";
+
+                    row += `
+                        <td class="lesson${i}">${lessonAssessmentScore}</td>
+                        <td class="lesson${i}QuizScore">${lessonQuizScore}</td>
+                        <td class="lesson${i}Date hidden">${lessonDateCompleted}</td>
+                    `;
+                }
+                row += `</tr>`;
+                tableBody.append(row);
+            });
+
+            applyFilters();
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.error("Error:", errorThrown);
+            alert("An error occurred while fetching accounts.");
+        },
+    });
+}
+
+</script>
+</body>
+</html>

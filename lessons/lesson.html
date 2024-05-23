@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Content Management</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <button id="addLessonButton">Add Lesson</button>
+    </div>
+
+    <div id="lessonFormContainer" style="display:none;">
+        <h3>Add New Lesson</h3>
+        <form id="lessonForm">
+            <label for="lessonTitle">Lesson Title:</label><br>
+            <input type="text" id="lessonTitle" name="lessonTitle" required><br><br>
+            <button type="submit">Add Lesson</button>
+        </form>
+    </div>
+
+    <div id="xmlData">
+        <table id="lessonTable">
+            <thead>
+                <tr>
+                    <th>Lesson ID</th>
+                    <th>Lesson Title</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Lesson rows will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            let xmlData;
+
+            // Load XML data from file
+            $.get("lesson.xml", function (data) {
+                xmlData = data;
+                createLessonTable();
+            });
+
+            // Create table rows for each lesson
+            function createLessonTable() {
+                const lessons = $(xmlData).find("lesson");
+                lessons.each(function () {
+                    const lessonId = $(this).find("id").text();
+                    const lessonTitle = $(this).find("lessontitle").text();
+                    addLessonRow(lessonId, lessonTitle);
+                });
+            }
+
+            // Add a new lesson row to the table
+            function addLessonRow(lessonId, lessonTitle) {
+                const row = `
+                    <tr id="lessonRow${lessonId}">
+                        <td>${lessonId}</td>
+                        <td>${lessonTitle}</td>
+                        <td>
+                            <button class="viewLessonButton" data-id="${lessonId}">View</button>
+                            <button class="editLessonButton" data-id="${lessonId}">Edit</button>
+                            <button class="deleteLessonButton" data-id="${lessonId}">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                $("#lessonTable tbody").append(row);
+
+                // Add click events for the buttons
+                $(`#lessonRow${lessonId} .viewLessonButton`).click(function () {
+                    window.location.href = `viewLesson.html?id=${lessonId}`;
+                });
+
+                $(`#lessonRow${lessonId} .editLessonButton`).click(function () {
+                    editLesson(lessonId);
+                });
+
+                $(`#lessonRow${lessonId} .deleteLessonButton`).click(function () {
+                    deleteLesson(lessonId);
+                });
+            }
+
+            // Show lesson form on button click
+            $("#addLessonButton").click(function () {
+                $("#lessonFormContainer").toggle();
+            });
+// add lesson
+            // Handle form submission for adding a new lesson
+            $("#lessonForm").submit(function (event) {
+                event.preventDefault();
+
+                const newLessonTitle = $("#lessonTitle").val();
+
+                if (newLessonTitle) {
+                    const lessons = $(xmlData).find("lesson");
+                    const newLessonId = lessons.length + 1;
+
+                    // Create new lesson
+                    const newLesson = $(`
+                        <lesson id="${newLessonId}">
+                            <id>${newLessonId}</id>
+                            <lessontitle>${newLessonTitle}</lessontitle>
+                        </lesson>
+                    `);
+
+
+                    AddAssessmentAndQuiz("lesson" + newLessonId)
+                    // Append the new lesson to the lessons
+                    $(xmlData).find("lessons").append(newLesson);
+
+                    // Save the updated XML data
+                    $.post("save_xml.php", { xmlData: new XMLSerializer().serializeToString(xmlData) })
+                        .done(() => {
+                            console.log("XML data saved successfully.");
+                            // Add the new lesson row to the table
+                            addLessonRow(newLessonId, newLessonTitle);
+                            // Clear the form
+                            $("#lessonTitle").val("");
+                            $("#lessonFormContainer").hide();
+                        })
+                        .fail((xhr, status, error) => console.error(`Error saving XML data: ${error}`));
+                } else {
+                    alert("Please fill in the lesson title.");
+                }
+            });
+
+            // Edit lesson
+            function editLesson(lessonId) {
+                const lessonTitle = prompt("Enter new lesson title:");
+                if (lessonTitle) {
+                    // Update XML data
+                    $(xmlData).find(`lesson:has(id:contains(${lessonId})) lessontitle`).text(lessonTitle);
+
+                    // Save the updated XML data
+                    $.post("save_xml.php", { xmlData: new XMLSerializer().serializeToString(xmlData) })
+                        .done(() => {
+                            console.log("XML data saved successfully.");
+                            // Update the lesson row in the table
+                            $(`#lessonRow${lessonId} td:nth-child(2)`).text(lessonTitle);
+                        })
+                        .fail((xhr, status, error) => console.error(`Error saving XML data: ${error}`));
+                }
+            }
+
+            // Delete lesson
+            function deleteLesson(lessonId) {
+                if (confirm("Are you sure you want to delete this lesson?")) {
+
+                    // delete the assessment under the lesson (ayoko na haha)
+                    deleteAssessment(lessonId);
+
+
+
+                    // Remove lesson from XML data
+                    $(xmlData).find(`lesson:has(id:contains(${lessonId}))`).remove();
+
+                    // Save the updated XML data
+                    $.post("save_xml.php", { xmlData: new XMLSerializer().serializeToString(xmlData) })
+                        .done(() => {
+                            console.log("XML data saved successfully.");
+                            // Remove the lesson row from the table
+                            $(`#lessonRow${lessonId}`).remove();
+                        })
+                        .fail((xhr, status, error) => console.error(`Error saving XML data: ${error}`));
+                }
+            }
+            function deleteAssessment(idToRemove) {
+                $.get("assessment.xml", function (data) {
+                    const xmlData = $(data);
+                    xmlData.find(`content[id='${idToRemove}']`).remove();
+                    // deleteLesson(idToRemove)
+                    $.post("save_assessment.php", { xmlData: new XMLSerializer().serializeToString(xmlData[0]) })
+                        .done(() => {
+                            console.log("Assessment deleted successfully.");
+                        })
+                        .fail((xhr, status, error) => {
+                            console.error(`Error deleting assessment data: ${error}`);
+                        });
+                });
+                lesson = 'lesson' + idToRemove;
+                $.ajax({
+                    type: 'POST',
+                    url: '../AdminPHP/delete_lesson.php', // Change this to the correct URL of your PHP script
+                    data: { lesson: lesson },
+                    success: function (response) {
+                        // alert( + response);
+                        console.log(response);
+                        // Optionally, you can perform additional actions after deleting lesson 2
+                    }
+                });
+            }
+
+
+
+
+
+
+            // Hardcoded lesson number
+
+
+            function AddAssessmentAndQuiz(lesson_id) {
+                // Construct the data to be sent
+                // lesson_id = "s"
+
+                // Send the AJAX POST request
+                $.ajax({
+                    type: 'POST',
+                    url: '../AdminPHP/add_lesson.php', // Change this to the correct URL of your PHP script
+                    data: {
+                        lesson_id: lesson_id
+                    },
+                    success: function (response) {
+                        alert(response);
+                        console.log(response)
+                        // Optionally, you can redirect the user or do other actions after adding the lesson
+                    }
+                });
+            }      
+        });
+
+
+    </script>
+</body>
+
+</html>

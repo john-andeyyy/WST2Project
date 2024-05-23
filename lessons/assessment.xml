@@ -1,0 +1,70 @@
+<assessment>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <content xmlns="http://www.w3.org/1999/xhtml" id="1">
+        <question>qwe</question>
+        <choices>
+            <choice>qwe</choice>
+            <choice>qwe</choice>
+            <choice>qwe</choice>
+            <choice>qwe</choice>
+        </choices>
+        <answer>qwe</answer>
+    </content>
+
+
+
+    <content xmlns="http://www.w3.org/1999/xhtml" id="1">
+        <question>wqe</question>
+        <choices>
+            <choice>qwe</choice>
+            <choice>qwe</choice>
+            <choice>qwe</choice>
+            <choice>qwe</choice>
+        </choices>
+        <answer>qwe</answer>
+    </content>
+<content xmlns="http://www.w3.org/1999/xhtml" id="1">
+                                    <question>123</question>
+                                    <choices>
+                                        <choice>1231231</choice>
+                                        <choice>1231</choice>
+                                        <choice>231</choice>
+                                        <choice>123</choice>
+                                    </choices>
+                                    <answer>23</answer>
+                                </content><content xmlns="http://www.w3.org/1999/xhtml" id="2">
+                                    <question>1231231</question>
+                                    <choices>
+                                        <choice>2312</choice>
+                                        <choice>3123</choice>
+                                        <choice>13123</choice>
+                                        <choice>123123</choice>
+                                    </choices>
+                                    <answer>12313</answer>
+                                </content></assessment>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lessons>
+
+    <lesson xmlns="http://www.w3.org/1999/xhtml" id="1">
+
+
+        <id>1</id>
+        <lessontitle>lesson 1</lessontitle>
+        <content>
+            <title>asd</title>
+            <description>asd</description>
+        </content>
+        <content>
+            <title>asd</title>
+            <description>asd</description>
+        </content>
+
+
+        <badge>../Badges/Screenshot 2024-03-29 231533.png</badge>
+    </lesson>
+
+
+
+    <lesson xmlns="http://www.w3.org/1999/xhtml" id="2">
+        <id>2</id>
+        <lessontitle>2</lessontitle>
+        <content>
+            <title>2</title>
+            <description>2</description>
+        </content>
+        <content>
+            <title>3</title>
+            <description>3</description>
+        </content>
+        <badge>../Badges/Screenshot 2024-04-05 231825.png</badge>
+    </lesson>
+    <lesson xmlns="http://www.w3.org/1999/xhtml" id="3">
+        <id>3</id>
+        <lessontitle>4</lessontitle>
+    </lesson>
+    <lesson xmlns="http://www.w3.org/1999/xhtml" id="4">
+        <id>4</id>
+        <lessontitle>efssdfsfsf</lessontitle>
+    </lesson>
+    <lesson xmlns="http://www.w3.org/1999/xhtml" id="5">
+        <id>5</id>
+        <lessontitle>Lesson 5</lessontitle>
+    </lesson>
+</lessons>

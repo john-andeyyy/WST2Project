@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<Accounts>
+    <account id="1">
+        <username>1</username>
+        <password>1</password>
+        <name>default1</name>
+        <email>default@gmail.com</email>
+
+        <lesson1>
+            <assessment>2</assessment>
+            <quiz>0</quiz>
+            <dateCompleted>2024-05-23</dateCompleted>
+        </lesson1>
+        <lesson2>
+            <assessment>0</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>2025-05-21</dateCompleted>
+        </lesson2>
+        <profilepic>../userSide/profile_pics/img664eb0038effd.png</profilepic>
+
+        <lesson3>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>2024-04-11</dateCompleted>
+        </lesson3>
+
+        <lesson4>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>2024-05-23</dateCompleted>
+        </lesson4>
+
+        <lesson5>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>2024-05-13</dateCompleted>
+        </lesson5>
+
+
+
+
+        <badges>
+
+            <badge>../Badges/Screenshot 2024-03-29 231533.png</badge>
+            <badge>../Badges/Screenshot 2024-03-29 231533.png</badge>
+            <badge>../Badges/Screenshot 2024-03-29 231533.png</badge>
+            <badge>../Badges/Screenshot 2024-03-29 231533.png</badge>
+            <badge>../Badges/Screenshot 2024-03-29 231533.png</badge>
+            <badge>../Badges/Screenshot 2024-03-29 231533.png</badge>
+            <badge>../Badges/Screenshot 2024-03-29 231533.png</badge>
+            <badge>../Badges/Screenshot 2024-03-29 231533.png</badge>
+            <badge>../Badges/Screenshot 2024-03-29 231533.png</badge>
+            <badge>../Badges/Screenshot 2024-03-29 231533.png</badge>
+            <badge>../Badges/Screenshot 2024-03-29 231533.png</badge>
+
+            <badge>../Badges/Screenshot 2024-03-29 231533.png</badge>
+            <badge>../Badges/Screenshot 2024-03-29 231533.png</badge>
+
+        </badges>
+    </account>
+
+    <account id="2">
+        <username>123</username>
+        <password>123</password>
+        <name>123</name>
+        <email>123@asd</email>
+        <profilepic>../userSide/profile_pics/default.png</profilepic>
+
+        <lesson1>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>Not Taken</dateCompleted>
+        </lesson1>
+        <lesson2>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>Not Taken</dateCompleted>
+        </lesson2>
+        <badges>
+
+        </badges>
+        <lesson3>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>Not Taken</dateCompleted>
+        </lesson3>
+        <lesson4>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>Not Taken</dateCompleted>
+        </lesson4>
+        <lesson5>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>Not Taken</dateCompleted>
+        </lesson5>
+    </account>
+
+
+    <account id="3">
+        <username>asds</username>
+        <password>asd</password>
+        <name>asd</name>
+        <email>default@gmail.coms</email>
+        <profilepic>../userSide/profile_pics/default.png</profilepic>
+        <badges/>
+        <lesson1>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>Not Taken</dateCompleted>
+        </lesson1>
+        <lesson2>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>Not Taken</dateCompleted>
+        </lesson2>
+        <lesson3>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>Not Taken</dateCompleted>
+        </lesson3>
+        <lesson4>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>Not Taken</dateCompleted>
+        </lesson4>
+        <lesson5>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>Not Taken</dateCompleted>
+        </lesson5>
+    </account>
+</Accounts>

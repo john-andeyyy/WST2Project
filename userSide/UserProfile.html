@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="../userSide/style/userProfile.css">
+    <link rel="stylesheet" href="./style/modal.css">
+
+</head>
+
+<body>
+
+    <a href="./UserDashboard.php" style="position: absolute; top: 10px; left: 10px;"><button>back</button></a>
+
+    <div class="navbar">
+        <a href="UserDashboard.php"><button class="back">&#8592;</button></a>
+        <h1>Profile</h1>
+    </div>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Change Password</h2>
+            <form onsubmit="return PasswordUpdate(this)" style="margin-right: 100px;">
+                <label for="oldPassword">Old Password</label>
+                <input type="password" id="oldPassword" name="oldPassword">
+                <label for="newPassword">New Password</label>
+                <input type="password" id="newPassword" name="newPassword">
+                <label for="confirmPassword">Confirm New Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword">
+                <input type="submit" value="Change Password">
+            </form>
+        </div>
+    </div>
+
+    <form id="updateForm" onsubmit="return update(this)">
+        <div class="Profile-pic">
+            <img src="" alt="Profile Picture">
+        </div>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required>
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+        <label for="profilepic">Upload your Profile Pic</label>
+        <input type="file" id="profilepic" name="profilepic">
+
+        <input type="submit" value="Confirm">
+
+
+        <div class="Badge-pic" style="text-align: center; align-items: center;">
+            <!-- Badge images will be dynamically added here -->
+        </div>
+
+        <button id="printCertificateButton" type="button" style="display: none;">Print Certificate</button>
+
+        <button type="button" id="myBtn">Change Password</button>
+        <button type="button" class="delete" onclick="deleteAccount()">Delete Account</button>
+    </form>
+
+    <script>
+       $.ajax({
+            url: "../userbackend/getUserData.php",
+            method: "GET",
+            dataType: "json",
+            success: function (userData) {
+                console.log(userData);
+                let id = userData.id;
+                let name = userData.name;
+                let username = userData.username;
+                let email = userData.email;
+                let profilepic = userData.profilepic;
+                let badges = userData.badges;
+
+                $('img').first().attr('src', profilepic); // Select the first img tag for the profile pic
+                $('#name').val(name);
+                $('#username').val(username);
+                $('#email').val(email);
+
+                // Clear the Badge Placeholder div
+                $('.Badge-pic').empty();
+
+                // Loop through each badge and create an img element
+                badges.forEach(function (badge) {
+                    let img = $('<img>', {
+                        src: badge,
+                        alt: "Badge",
+                        width: 100,
+                        height: 100
+                    }).css('margin', '2px');
+                    $('.Badge-pic').append(img);
+                });
+
+                // Show the "print certificate" button if the user has 3 or more badges
+                if (badges.length >= 3) {
+                    $('#printCertificateButton').show();
+                }
+
+                // Set up click event for print certificate button
+                $('#printCertificateButton').on('click', function () {
+                    var url = '../certificate/CERTIFICATE.html'; // Change this to the actual path of your file
+                    var newTab = window.open(url, '_blank');
+
+                    // Wait for the new tab to load and then send the message
+                    newTab.onload = function () {
+                        var thirdLatestDate = userData.thirdLatestDate || "No third date available";
+                        newTab.postMessage({ name: name, date: thirdLatestDate }, '*');
+                    };
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+                alert("Failed to fetch user data.");
+            }
+        });
+
+
+        function PasswordUpdate(form) {
+            $.ajax({
+                url: "../userbackend/userPass.php",
+                data: {
+                    OldPassword: $(form).find('#oldPassword').val(),
+                    newPassword: $(form).find('#newPassword').val(),
+                    confirmPassword: $(form).find('#confirmPassword').val(),
+                },
+                success: function (response) {
+                    console.log(response);
+                    alert(response); // Show an alert for feedback
+                    if (response == "Password updated successfully.") {
+                        modal.style.display = "none";
+                    }
+                }
+            });
+            return false;
+        }
+
+        function update(form) {
+            event.preventDefault(); // Prevent default form submission
+            var formData = new FormData(form); // Use the form parameter passed to the function
+            formData.append('name', $(form).find('#name').val());
+            formData.append('username', $(form).find('#username').val());
+            formData.append('email', $(form).find('#email').val());
+            $.ajax({
+                url: "../userbackend/userUpdate.php",
+                method: "POST", // Specify the method
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    console.log(response);
+                    alert(response);
+                    window.location.reload();
+                }
+            });
+            return false; // Prevent form submission
+        }
+
+
+
+        function deleteAccount() {
+            if (confirm("Are you sure you want to delete?")) {
+                $.ajax({
+                    url: "../userbackend/DeleteAccount.php",
+                    success: function (response) {
+                        console.log(response);
+                        alert(response);
+                        if (response.includes("deleted successfully")) {
+                            window.location.href = "../LandingPage/index.html";
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                        alert("Failed to delete account.");
+                    }
+                });
+                return false; // Prevent form submission
+            }
+        }
+
+    // $('#printCertificateButton').on('click', function () {
+    //     // The URL of the new file you want to open
+    //     var url = '../certificate/CERTIFICATE.html'; // Change this to the actual path of your file
+
+    //     // Open the URL in a new tab
+    //     var newTab = window.open(url, '_blank');
+
+    //     // The data to pass
+    //     var name = "Johnsasdas "; // Replace with the actual name or dynamically get it
+    //     var currentDate = new Date().toLocaleDateString('en-US', {
+    //         year: 'numeric',
+    //         month: 'long',
+    //         day: '2-digit'
+    //     });
+
+    //     // Wait for the new tab to load and then send the message
+    //     newTab.onload = function () {
+    //         newTab.postMessage({ name: name, date: currentDate }, '*');
+    //     };
+    // });
+
+
+
+
+
+    </script>
+
+    <script src="./scripts/modal.js"></script>
+</body>
+
+</html>

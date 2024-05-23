@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 1: Introduction to C#</title>
+    <style>
+        /* CSS for styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f3f3;
+        }
+        .header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #007bff; /* Header color */
+        }
+        .code {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-family: monospace; /* Code font */
+            color: #333; /* Code color */
+        }
+        p {
+            color: #333; /* Text color */
+        }
+        ul {
+            color: #333; /* List color */
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h2>Lesson 1: Introduction to C#</h2>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <!-- What is C#? -->
+        <section class="section">
+            <h3>What is C#?</h3>
+            <p>
+                C# (pronounced as "C sharp") is a powerful programming language developed by Microsoft. It's designed to be versatile, allowing developers to create a wide range of applications, including interactive websites, mobile apps, video games, augmented reality (AR), virtual reality (VR), desktop applications, and back-end services.
+            </p>
+            <p>
+                For instance, popular applications like Pokemon Go and Stack Overflow were built using frameworks that utilize C# (Unity and ASP.NET, respectively).
+            </p>
+        </section>
+
+        <!-- Run Some C# -->
+        <section class="section">
+            <h3>Run Some C#</h3>
+            <p>
+                Let's start with a simple example. The following line of code prints "Hello World!" to the console:
+            </p>
+            <div class="code">
+                Console.WriteLine("Hello World!");
+            </div>
+        </section>
+
+        <!-- Getting Input -->
+        <section class="section">
+            <h3>Getting Input</h3>
+            <p>
+                You can interact with users by capturing their input. Here's how you can prompt the user for their age and display it back to them:
+            </p>
+            <div class="code">
+                Console.WriteLine("How old are you?");<br>
+                string input = Console.ReadLine();<br>
+                Console.WriteLine($"You are {input} years old!");
+            </div>
+        </section>
+
+        <!-- Comments -->
+        <section class="section">
+            <h3>Comments</h3>
+            <p>
+                Comments are essential in programming. They provide context, improve readability, and allow developers to ignore specific lines of code. In C#, comments can be single-line (starting with //) or multi-line (enclosed within /* */).
+            </p>
+            <p>
+                Here's an example of how comments can be used:
+            </p>
+            <div class="code">
+                // This is a single-line comment<br>
+                /* This is a multi-line comment */<br>
+                int persnicketyCount = 0; // Variable declaration with a comment
+            </div>
+        </section>
+
+        <!-- Object-Oriented Programming (OOP) in C# -->
+        <section class="section">
+            <h3>Object-Oriented Programming (OOP) in C#</h3>
+            <p>
+                C# is an object-oriented programming language, which means it uses objects to model real-world entities. Here are some core concepts of OOP in C#:
+            </p>
+
+            <!-- Classes and Objects -->
+            <h4>Classes and Objects</h4>
+            <p>
+                A class is a blueprint for creating objects. It defines properties and methods that the objects created from the class will have. Here's an example of a simple class and how to create an object from it:
+            </p>
+            <div class="code">
+                public class Person {<br>
+                &nbsp;&nbsp;public string Name { get; set; }<br>
+                &nbsp;&nbsp;public int Age { get; set; }<br>
+                }<br><br>
+
+                // Creating an object of the Person class<br>
+                Person person = new Person();<br>
+                person.Name = "John";<br>
+                person.Age = 30;<br>
+                Console.WriteLine($"Name: {person.Name}, Age: {person.Age}");
+            </div>
+
+            <!-- Inheritance -->
+            <h4>Inheritance</h4>
+            <p>
+                Inheritance allows a class to inherit properties and methods from another class. This helps to reuse code and establish a hierarchy. Here's an example:
+            </p>
+            <div class="code">
+                public class Animal {<br>
+                &nbsp;&nbsp;public void Eat() {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;Console.WriteLine("Eating...");<br>
+                &nbsp;&nbsp;}<br>
+                }<br><br>
+
+                public class Dog : Animal {<br>
+                &nbsp;&nbsp;public void Bark() {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;Console.WriteLine("Barking...");<br>
+                &nbsp;&nbsp;}<br>
+                }<br><br>
+
+                Dog dog = new Dog();<br>
+                dog.Eat();  // Inherited method<br>
+                dog.Bark(); // Method of Dog class
+            </div>
+
+            <!-- Encapsulation -->
+            <h4>Encapsulation</h4>
+            <p>
+                Encapsulation is the concept of wrapping data and methods into a single unit (class) and restricting access to some of the object's components. This is done using access modifiers. Here's an example:
+            </p>
+            <div class="code">
+                public class Account {<br>
+                &nbsp;&nbsp;private decimal balance;<br><br>
+
+                &nbsp;&nbsp;public void Deposit(decimal amount) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;if (amount > 0) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;balance += amount;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;}<br><br>
+
+                &nbsp            &nbsp;&nbsp;public decimal GetBalance() {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return balance;<br>
+                    &nbsp;&nbsp;}<br>
+                    }<br><br>
+    
+                    Account account = new Account();<br>
+                    account.Deposit(100);<br>
+                    Console.WriteLine($"Balance: {account.GetBalance()}");
+                </div>
+    
+                <!-- Polymorphism -->
+                <h4>Polymorphism</h4>
+                <p>
+                    Polymorphism allows methods to do different things based on the object it is acting upon, even if the method name is the same. There are two types of polymorphism in C#: compile-time (method overloading) and runtime (method overriding). Here's an example of runtime polymorphism:
+                </p>
+                <div class="code">
+                    public class Animal {<br>
+                    &nbsp;&nbsp;public virtual void MakeSound() {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;Console.WriteLine("Some generic animal sound");<br>
+                    &nbsp;&nbsp;}<br>
+                    }<br><br>
+    
+                    public class Dog : Animal {<br>
+                    &nbsp;&nbsp;public override void MakeSound() {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;Console.WriteLine("Bark");<br>
+                    &nbsp;&nbsp;}<br>
+                    }<br><br>
+    
+                    public class Cat : Animal {<br>
+                    &nbsp;&nbsp;public override void MakeSound() {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;Console.WriteLine("Meow");<br>
+                    &nbsp;&nbsp;}<br>
+                    }<br><br>
+    
+                    Animal myAnimal;<br>
+                    myAnimal = new Dog();<br>
+                    myAnimal.MakeSound(); // Output: Bark<br><br>
+    
+                    myAnimal = new Cat();<br>
+                    myAnimal.MakeSound(); // Output: Meow
+                </div>
+    
+                <!-- Abstraction -->
+                <h4>Abstraction</h4>
+                <p>
+                    Abstraction is the concept of hiding the complex implementation details and showing only the essential features of an object. This is usually achieved using abstract classes and interfaces. Here's an example using an abstract class:
+                </p>
+                <div class="code">
+                    public abstract class Shape {<br>
+                    &nbsp;&nbsp;public abstract double GetArea();<br>
+                    }<br><br>
+    
+                    public class Circle : Shape {<br>
+                    &nbsp;&nbsp;public double Radius { get; set; }<br><br>
+    
+                    &nbsp;&nbsp;public Circle(double radius) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;Radius = radius;<br>
+                    &nbsp;&nbsp;}<br><br>
+    
+                    &nbsp;&nbsp;public override double GetArea() {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return Math.PI * Radius * Radius;<br>
+                    &nbsp;&nbsp;}<br>
+                    }<br><br>
+    
+                    Circle circle = new Circle(5);<br>
+                    Console.WriteLine($"Area of the circle: {circle.GetArea()}");
+                </div>
+            </section>
+    
+            <!-- Review -->
+            <section class="section">
+                <h3>Review</h3>
+                <p>
+                    Congratulations on completing your first lesson in C#! Here's a quick recap of what you've learned:
+                </p>
+                <ul>
+                    <li>C# is a versatile programming language used to build a wide range of applications.</li>
+                    <li>It's employed in various domains such as web development, mobile apps, games, and more.</li>
+                    <li>Key commands like <code>Console.WriteLine()</code> and <code>Console.ReadLine()</code> are used for input/output operations.</li>
+                    <li>Comments help improve code readability and provide context.</li>
+                    <li>OOP concepts in C# include classes, objects, inheritance, encapsulation, polymorphism, and abstraction.</li>
+                </ul>
+                <p>
+                    Keep practicing, and you'll soon be on your way to mastering C#!
+                </p>
+            </section>
+    
+        </div>
+    </body>
+    </html>
+    

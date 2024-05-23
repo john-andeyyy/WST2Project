@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Update Lesson</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+
+<body>
+    <h2>Update Lesson</h2>
+    <form id="updateForm">
+        Account ID: <input type="text" name="id"><br>
+        Lesson Number: <input type="text" name="lesson"><br>
+        Assessment Score: <input type="text" name="assessment"><br>
+        Quiz Score: <input type="text" name="quiz"><br>
+        Action:
+        <select name="action">
+            <option value="assessment">Update Assessment</option>
+            <option value="quiz">Update Quiz</option>
+        </select><br>
+        <input type="submit" value="Update">
+    </form>
+    <div id="message"></div>
+
+    <script>
+        $(document).ready(function () {
+            $('#updateForm').submit(function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: '../userbackend/updateStatus.php',
+                    data: formData,
+                    success: function (response) {
+                        $('#message').text(response);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

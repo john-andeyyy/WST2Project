@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Assessment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1,
+        h2 {
+            color: #343a40;
+        }
+
+        form,
+        table {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        label,
+        input {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button a {
+            color: white;
+            text-decoration: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .actions {
+            text-align: center;
+        }
+
+        .actions button {
+            margin: 0 5px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <h1>Add New Assessment</h1>
+    <form id="addAssessmentForm">
+        <label for="newQuestion">Question:</label>
+        <input type="text" id="newQuestion" name="newQuestion" required>
+        <label for="newChoice1">Choice 1:</label>
+        <input type="text" id="newChoice1" name="newChoice1" required>
+        <label for="newChoice2">Choice 2:</label>
+        <input type="text" id="newChoice2" name="newChoice2" required>
+        <label for="newChoice3">Choice 3:</label>
+        <input type="text" id="newChoice3" name="newChoice3" required>
+        <label for="newChoice4">Choice 4:</label>
+        <input type="text" id="newChoice4" name="newChoice4" required>
+        <label for="newAnswer">Answer:</label>
+        <input type="text" id="newAnswer" name="newAnswer" required>
+        <button type="submit" id="submitButton">Add Assessment</button>
+    </form>
+
+
+    <h1>Add Badge to Lesson</h1>
+    <label for="badgeImage">Badge Image:</label>
+    <div id="badgeContainer"></div>
+    <input type="file" id="badgeImage" accept="image/*"><br>
+    <button id="addBadgeButton">Add Badge</button>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+    </script>
+
+
+
+
+    <h2>Existing Assessments</h2>
+    <table id="assessmentTable">
+        <thead>
+            <tr>
+                <th>Question</th>
+                <th>Choices</th>
+                <th>Answer</th>
+                <th class="actions">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <button><a href="viewLesson.html">Back to Lessons</a></button>
+
+    <script>
+        $(document).ready(function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const lessonId = urlParams.get('id');
+
+
+
+
+
+
+
+
+
+
+
+            $('#addBadgeButton').click(function () {
+                // const lessonId = $('#lessonId').val();
+                const badgeImage = $('#badgeImage')[0].files[0];
+
+                const formData = new FormData();
+                formData.append('lessonId', lessonId);
+                formData.append('badgeImage', badgeImage);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '../AdminPHP/add_badge.php',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        alert(response);
+                    }
+                });
+            });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            function displayAssessments() {
+                $.get("assessment.xml", function (data) {
+                    const xmlData = $(data);
+                    const assessments = xmlData.find(`content[id='${lessonId}']`);
+                    const tbody = $("#assessmentTable tbody");
+                    tbody.empty();
+
+                    assessments.each(function (index) {
+                        const question = $(this).find("question").text();
+                        const choices = $(this).find("choices choice").map(function () {
+                            return $(this).text();
+                        }).get().join(", ");
+                        const answer = $(this).find("answer").text();
+
+                        const row = `
+                            <tr data-index="${index}">
+                                <td>${question}</td>
+                                <td>${choices}</td>
+                                <td>${answer}</td>
+                                <td class="actions">
+                                    <button class="editButton" data-index="${index}">Edit</button>
+                                    <button class="deleteButton" data-index="${index}">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                        tbody.append(row);
+                    });
+
+                    $(".editButton").click(function () {
+                        const index = $(this).data("index");
+                        showEditForm(index);
+                    });
+
+                    $(".deleteButton").click(function () {
+                        const index = $(this).data("index");
+                        deleteAssessment(index);
+                    });
+                });
+            }
+
+            function showEditForm(index) {
+                $.get("assessment.xml", function (data) {
+                    const xmlData = $(data);
+                    const assessmentToEdit = xmlData.find(`content[id='${lessonId}']`).eq(index);
+                    const question = assessmentToEdit.find("question").text();
+                    const choices = assessmentToEdit.find("choices choice");
+                    const answer = assessmentToEdit.find("answer").text();
+
+                    $("#newQuestion").val(question);
+                    $("#newChoice1").val(choices.eq(0).text());
+                    $("#newChoice2").val(choices.eq(1).text());
+                    $("#newChoice3").val(choices.eq(2).text());
+                    $("#newChoice4").val(choices.eq(3).text());
+                    $("#newAnswer").val(answer);
+
+                    $("#addAssessmentForm").data("edit-index", index);
+                    $("#submitButton").text("Update Assessment");
+                });
+            }
+
+            function deleteAssessment(index) {
+                $.get("assessment.xml", function (data) {
+                    const xmlData = $(data);
+                    const assessmentToDelete = xmlData.find(`content[id='${lessonId}']`).eq(index);
+                    assessmentToDelete.remove();
+
+                    // Save the updated XML data
+                    $.post("save_assessment.php", { xmlData: new XMLSerializer().serializeToString(xmlData[0]) })
+                        .done(() => {
+                            console.log("Assessment deleted successfully.");
+                            $(`#assessmentTable tr[data-index='${index}']`).remove();
+                        })
+                        .fail((xhr, status, error) => {
+                            console.error(`Error deleting assessment data: ${error}`);
+                            displayAssessments(); // Refetch and update UI
+                        });
+                });
+            }
+
+            $("#addAssessmentForm").submit(function (event) {
+                event.preventDefault();
+
+                const newQuestion = $("#newQuestion").val();
+                const newChoice1 = $("#newChoice1").val();
+                const newChoice2 = $("#newChoice2").val();
+                const newChoice3 = $("#newChoice3").val();
+                const newChoice4 = $("#newChoice4").val();
+                const newAnswer = $("#newAnswer").val();
+                const editIndex = $(this).data("edit-index");
+
+                if (newQuestion && newChoice1 && newChoice2 && newChoice3 && newChoice4 && newAnswer) {
+                    $.get("assessment.xml", function (data) {
+                        const xmlData = $(data);
+                        const assessments = xmlData.find(`content[id='${lessonId}']`);
+
+                        if (editIndex !== undefined) {
+                            const assessmentToUpdate = assessments.eq(editIndex);
+                            assessmentToUpdate.find("question").text(newQuestion);
+                            assessmentToUpdate.find("choices choice").eq(0).text(newChoice1);
+                            assessmentToUpdate.find("choices choice").eq(1).text(newChoice2);
+                            assessmentToUpdate.find("choices choice").eq(2).text(newChoice3);
+                            assessmentToUpdate.find("choices choice").eq(3).text(newChoice4);
+                            assessmentToUpdate.find("answer").text(newAnswer);
+                        } else {
+                            const newContent = $(`
+                                <content id='${lessonId}'>
+                                    <question>${newQuestion}</question>
+                                    <choices>
+                                        <choice>${newChoice1}</choice>
+                                        <choice>${newChoice2}</choice>
+                                        <choice>${newChoice3}</choice>
+                                        <choice>${newChoice4}</choice>
+                                    </choices>
+                                    <answer>${newAnswer}</answer>
+                                </content>
+                            `);
+                            xmlData.find("assessment").append(newContent);
+                        }
+
+                        // Save the updated XML data
+                        $.post("save_assessment.php", { xmlData: new XMLSerializer().serializeToString(xmlData[0]) })
+                            .done(() => {
+                                console.log("Assessment saved successfully.");
+                                const newChoices = [newChoice1, newChoice2, newChoice3, newChoice4].join(", ");
+                                if (editIndex !== undefined) {
+                                    // Update the existing row
+                                    const row = $(`#assessmentTable tr[data-index='${editIndex}']`);
+                                    row.find("td:eq(0)").text(newQuestion);
+                                    row.find("td:eq(1)").text(newChoices);
+                                    row.find("td:eq(2)").text(newAnswer);
+                                } else {
+                                    // Add a new row
+                                    const newIndex = assessments.length;
+                                    const newRow = `
+                                        <tr data-index="${newIndex}">
+                                            <td>${newQuestion}</td>
+                                            <td>${newChoices}</td>
+                                            <td>${newAnswer}</td>
+                                            <td class="actions">
+                                                <button class="editButton" data-index="${newIndex}">Edit</button>
+                                                <button class="deleteButton" data-index="${newIndex}">Delete</button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                    $("#assessmentTable tbody").append(newRow);
+                                }
+
+                                $("#newQuestion, #newChoice1, #newChoice2, #newChoice3, #newChoice4, #newAnswer").val('');
+                                $("#addAssessmentForm").removeData("edit-index");
+                                $("#submitButton").text("Add Assessment");
+
+                                // Rebind events to new buttons
+                                $(".editButton").off("click").on("click", function () {
+                                    const index = $(this).data("index");
+                                    showEditForm(index);
+                                });
+                                $(".deleteButton").off("click").on("click", function () {
+                                    const index = $(this).data("index");
+                                    deleteAssessment(index);
+                                });
+                            })
+                            .fail((xhr, status, error) => {
+                                console.error(`Error saving assessment data: ${error}`);
+                                displayAssessments(); // Refetch and update UI
+                            });
+                    });
+                } else {
+                    alert("Please fill in all fields.");
+                }
+            });
+
+            function displayBadges() {
+                $.get("lesson.xml", function (data) {
+                    const xmlData = $(data);
+                    const lesson = xmlData.find(`lesson[id='${lessonId}']`);
+                    const badgePath = lesson.find("badge").text();
+                    const badgeContainer = $("#badgeContainer");
+                    badgeContainer.empty();
+
+                    if (badgePath) {
+                        const badgeImage = `<img src="${badgePath}" alt="Badge" width="400">`;
+                        badgeContainer.append(badgeImage);
+                    } else {
+                        badgeContainer.append("<p>No badge available for this lesson.</p>");
+                    }
+                });
+            }
+            displayBadges();
+            displayAssessments();
+        });
+    </script>
+</body>
+
+</html>

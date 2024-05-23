@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Sedan+SC&display=swap" rel="stylesheet">
+    <title>Certificate of Completion</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f3f3f3;
+            margin: 0;
+        }
+
+        .certificate-container {
+            width: 80%;
+            max-width: 800px;
+            border: 10px solid goldenrod;
+            padding: 30px;
+            text-align: center;
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+        }
+
+        .certificate-container h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: goldenrod;
+            font-family: 'Sedan SC', sans-serif;
+        }
+
+        .certificate-container p {
+            font-size: 1.2em;
+            margin: 20px 0;
+            color: #333;
+        }
+
+        .name-line {
+            border-bottom: 2px solid #000;
+            width: 70%;
+            margin: 0 auto;
+            margin-bottom: 30px;
+            height: 2em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+        }
+
+        .signature {
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .signature-line {
+            border-bottom: 2px solid #000;
+            width: 200px;
+            margin-top: 10px;
+        }
+
+        .company-name {
+            font-weight: bold;
+            font-size: 1.5em;
+            color: goldenrod;
+        }
+
+        .signature-image {
+            width: 200px;
+            height: auto;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        #current-date {
+            font-weight: bold;
+            color: goldenrod;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="certificate-container">
+        <h1>CERTIFICATE OF COMPLETION</h1>
+        <p>This certificate is presented to:</p>
+        <div class="name-line" id="user-name"></div>
+        <p>For successfully completing the programming course</p>
+        <p>Presented this <span id="current-date"></span></p>
+        <p>by <span class="company-name">YAYAYAYAYAYAMOT</span></p>
+        <div class="signature">
+            <p>Signature:</p>
+            <img src="./images/signature.png" alt="Signature" class="signature-image">
+        </div>
+    </div>
+
+    <script>
+        // Function to set user name and date
+        function setCertificateData(name, date) {
+            document.getElementById('user-name').innerText = name;
+            document.getElementById('current-date').innerText = date;
+            // Store the name and date in local storage
+            localStorage.setItem('certificateName', name);
+            localStorage.setItem('certificateDate', date);
+        }
+
+        // Check if name and date exist in local storage
+        var storedName = localStorage.getItem('certificateName');
+        var storedDate = localStorage.getItem('certificateDate');
+
+        // If name and date exist, set them on the certificate
+        if (storedName && storedDate) {
+            setCertificateData(storedName, storedDate);
+        } else {
+            // If not, set default values (you can adjust these as needed)
+            var defaultName = "John Doe";
+            var defaultDate = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: '2-digit'
+            });
+            setCertificateData(defaultName, defaultDate);
+        }
+
+        // Listen for messages
+        window.addEventListener('message', function (event) {
+            if (event.origin !== window.location.origin) {
+                return; // Ignore messages from unknown origins
+            }
+            var data = event.data;
+            if (data.name && data.date) {
+                setCertificateData(data.name, data.date);
+            }
+        });
+    </script>
+</body>
+
+</html>

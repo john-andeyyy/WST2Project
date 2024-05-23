@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Content Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #xmlData {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #lessonFormContainer {
+            margin-top: 20px;
+            display: none;
+        }
+
+        #lessonForm {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #lessonTitle {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        #addLessonButton {
+            
+            background-color: #28a745;
+        }
+
+        #addLessonButton:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>XML Content Management</h1>
+        <div id="xmlData"></div>
+
+        <!-- <button id="addLessonButton">Add Lesson</button>
+
+        <div id="lessonFormContainer">
+            <form id="lessonForm">
+                <input type="text" id="lessonTitle" placeholder="Enter Lesson Title">
+                <button type="submit">Save</button>
+            </form>
+        </div> -->
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            let xmlData;
+
+            // Load XML data from file
+            $.get("../lessons/lesson.xml", function (data) {
+                xmlData = data;
+                createLessonButtons();
+            });
+
+            // Create buttons for each lesson
+            function createLessonButtons() {
+                const lessonButtons = [];
+                const lessons = $(xmlData).find("lesson");
+                lessons.each(function () {
+                    const lessonId = $(this).find("id").text();
+                    const lessonTitle = $(this).find("lessontitle").text();
+                    const button = `<button id="btnLesson${lessonId}">${lessonTitle}</button>`;
+                    lessonButtons.push(button);
+                });
+                $("#xmlData").html(lessonButtons.join(' '));
+
+                // Handle button click events
+                lessons.each(function () {
+                    const lessonId = $(this).find("id").text();
+                    $(`#btnLesson${lessonId}`).click(function () {
+                        window.location.href = `viewLesson.php?id=${lessonId}`;
+                    });
+                });
+            }
+
+            // Show lesson form on button click
+            $("#addLessonButton").click(function () {
+                $("#lessonFormContainer").toggle();
+            });
+
+            // Handle form submission for adding a new lesson
+            $("#lessonForm").submit(function (event) {
+                event.preventDefault();
+
+                const newLessonTitle = $("#lessonTitle").val();
+
+                if (newLessonTitle) {
+                    const lessons = $(xmlData).find("lesson");
+                    const newLessonId = lessons.length + 1;
+
+                    // Create new lesson
+                    const newLesson = $(`
+                        <lesson>
+                            <id>${newLessonId}</id>
+                            <lessontitle>${newLessonTitle}</lessontitle>
+                        </lesson>
+                    `);
+
+                    // Append the new lesson to the lessons
+                    $(xmlData).find("lessons").append(newLesson);
+
+                    // Save the updated XML data
+                    $.post("save_xml.php", { xmlData: new XMLSerializer().serializeToString(xmlData) })
+                        .done(() => console.log("XML data saved successfully."))
+                        .fail((xhr, status, error) => console.error(`Error saving XML data: ${error}`));
+
+                    // Refresh the page to reflect changes (optional)
+                    location.reload();
+                } else {
+                    alert("Please fill in the lesson title.");
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

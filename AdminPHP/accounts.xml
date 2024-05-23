@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<Accounts>
+    <account id="1">
+        <username>1</username>
+        <password>1</password>
+        <name>Andrei1</name>
+        <email>Andrei1@gmail.com</email>
+        <profilepic>../userSide/profile_pics/default.png</profilepic>
+
+        <lesson1>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>Not Taken</dateCompleted>
+        </lesson1>
+    </account>
+
+    <account id="2">
+        <username>Ichan</username>
+        <password>Ichan</password>
+        <name>Ichan</name>
+        <email>Ichan@gmail.com</email>
+        <profilepic>../userSide/profile_pics/default.png</profilepic>
+
+        <lesson1>
+            <assessment>Not Taken</assessment>
+            <quiz>Not Taken</quiz>
+            <dateCompleted>Not Taken</dateCompleted>
+        </lesson1>
+    </account>
+
+    
+<lesson><lesson_id>1</lesson_id></lesson><lesson1><assessment>Not Taken</assessment><quiz>Not Taken</quiz><dateCompleted>Not Taken</dateCompleted></lesson1></Accounts>

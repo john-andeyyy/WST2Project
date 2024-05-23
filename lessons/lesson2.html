@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 2: Variables and Data Types in C#</title>
+    <style>
+        /* CSS for styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f3f3;
+            color: #333; /* Adjusted text color */
+        }
+        .header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #007bff; /* Adjusted heading color */
+        }
+        .code {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-family: "Courier New", Courier, monospace;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h2>Lesson 2: Variables and Data Types in C#</h2>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <!-- Introduction to Data Types and Variables in C# -->
+        <section class="section">
+            <h3>Introduction to Data Types and Variables in C#</h3>
+            <p>
+                Welcome to Lesson 2! In this lesson, we'll delve deeper into the world of programming with C#. We'll explore how to store different types of information in variables and understand the importance of choosing the right data type for your data.
+            </p>
+            <p>
+                Imagine your program as a toolbox, and variables as containers inside that toolbox. Each container can hold a different type of item, such as numbers, text, or true/false values. Understanding how to use these containers effectively is crucial for building powerful and reliable programs.
+            </p>
+        </section>
+
+        <!-- C# Data Types -->
+        <section class="section">
+            <h3>C# Data Types</h3>
+            <p>
+                C# offers a variety of data types, each designed to handle specific types of information. Let's take a closer look at some common data types:
+            </p>
+            <ul>
+                <li><strong>int:</strong> Used for storing whole numbers, such as 1, 2, or -5.</li>
+                <li><strong>double:</strong> Used for storing decimal numbers, like 3.14 or -0.5.</li>
+                <li><strong>char:</strong> Used for storing single characters, like 'a' or '$'.</li>
+                <li><strong>string:</strong> Used for storing text, like "Hello, World!" or "John Doe".</li>
+                <li><strong>bool:</strong> Used for storing true/false values, such as true or false.</li>
+            </ul>
+            <p>
+                Understanding these data types will help you effectively manage and manipulate data in your programs.
+            </p>
+        </section>
+
+        <!-- Creating Variables with Types -->
+        <section class="section">
+            <h3>Creating Variables with Types</h3>
+            <p>
+                In C#, you declare variables by specifying their data type followed by a unique name. Let's see an example:
+            </p>
+            <div class="code">
+                // Declare an integer variable named age and assign it a value of 25<br>
+                int age = 25;
+            </div>
+            <p>
+                Here, <code>age</code> is the name of the variable, and <code>int</code> indicates that it will store whole numbers. Think of it as labeling a container with a specific type of item it can hold.
+            </p>
+        </section>
+
+        <!-- Variable Naming Conventions -->
+        <section class="section">
+            <h3>Variable Naming Conventions</h3>
+            <p>
+                Choosing meaningful names for your variables is important for code readability and maintenance. Here are some tips for naming variables in C#:
+            </p>
+            <ul>
+                <li>Use camelCase for local variables and method parameters (e.g., <code>userName</code>, <code>orderTotal</code>).</li>
+                <li>Use descriptive names that convey the purpose of the variable (e.g., <code>firstName</code>, <code>accountBalance</code>).</li>
+                <li>Avoid using single-character names, except for loop counters (e.g., <code>i</code>, <code>j</code>).</li>
+                <li>Do not use reserved keywords as variable names (e.g., <code>int</code>, <code>class</code>).</li>
+            </ul>
+        </section>
+
+        <!-- Type Conversion -->
+        <section class="section">
+            <h3>Type Conversion</h3>
+            <p>
+                Sometimes, you may need to convert a value from one data type to another. C# provides several ways to perform type conversion:
+            </p>
+            <h4>Implicit Conversion</h4>
+            <p>
+                Implicit conversion occurs automatically when there is no risk of data loss. For example, converting an <code>int</code> to a <code>double</code>:
+            </p>
+            <div class="code">
+                int num = 10;<br>
+                double d = num; // Implicit conversion from int to double
+            </div>
+            <h4>Explicit Conversion</h4>
+            <p>
+                Explicit conversion requires a cast operator because there is a risk of data loss. For example, converting a <code>double</code> to an <code>int</code>:
+            </p>
+            <div class="code">
+                double d = 9.8;<br>
+                int num = (int)d; // Explicit conversion from double to int
+            </div>
+            <h4>Using Methods</h4>
+            <p>
+                You can also use methods like <code>Convert.ToInt32</code> and <code>int.Parse</code> for type conversion:
+            </p>
+            <div class="code">
+                string str = "123";<br>
+                int num = int.Parse(str); // Converts string to int
+            </div>
+        </section>
+
+        <!-- Handling Errors -->
+        <section class="section">
+            <h3>Handling Errors</h3>
+            <p>
+                Programming is an iterative process, and it's common to encounter errors along the way. Understanding and resolving these errors is essential for writing robust and reliable code. Here are some common errors you may encounter:
+            </p>
+            <ul>
+                <li>Using the wrong type of variable for your data can lead to unexpected behavior or errors in your program.</li>
+                <li>Forgetting to initialize a variable before using it can result in unpredictable outcomes.</li>
+                <li>Attempting to convert one data type into another that is incompatible can cause errors.</li>
+            </ul>
+            <p>
+                <strong>Debugging Tip:</strong> Use print statements or debugging tools to trace the value of variables and identify errors in your code.
+            </p>
+        </section>
+
+        <!-- Review -->
+        <section class="section">
+            <h3>Review</h3>
+            <p>
+                Congratulations! In this lesson, you've learned about variables and data types in C#. You now understand how to declare variables, choose appropriate data types, handle type conversions, and handle common errors that may arise during programming. Remember to <strong>keep practicing</strong> and <strong>experimenting</strong> with different data types to reinforce your understanding and build your programming skills!
+            </p>
+            <p>
+                <strong>Additional Resources:</strong> Check out the <a href="https://docs.microsoft.com/en-us/dotnet/csharp/">Microsoft C# Documentation</a> for more in-depth explanations and examples.
+            </p>
+        </section>
+    </div>
+</body>
+</html>

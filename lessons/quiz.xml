@@ -1,0 +1,31 @@
+<quiz>
+
+
+<content xmlns="http://www.w3.org/1999/xhtml" id="1">
+                                    <question>randombulshit</question>
+                                    <choices>
+                                        <choice>randombulshit1</choice>
+                                        <choice>randombulshit2</choice>
+                                        <choice>randombulshit3</choice>
+                                        <choice>randombulshit</choice>
+                                    </choices>
+                                    <answer>randombulshit</answer>
+                                </content><content xmlns="http://www.w3.org/1999/xhtml" id="1">
+                                    <question>randombulshit1</question>
+                                    <choices>
+                                        <choice>randombulshit2</choice>
+                                        <choice>randombulshit3</choice>
+                                        <choice>randombulshit4</choice>
+                                        <choice>randombulshit5</choice>
+                                    </choices>
+                                    <answer>randombulshit2</answer>
+                                </content><content xmlns="http://www.w3.org/1999/xhtml" id="2">
+                                    <question>random</question>
+                                    <choices>
+                                        <choice>random1</choice>
+                                        <choice>random2</choice>
+                                        <choice>random3</choice>
+                                        <choice>random4</choice>
+                                    </choices>
+                                    <answer>random1</answer>
+                                </content></quiz>

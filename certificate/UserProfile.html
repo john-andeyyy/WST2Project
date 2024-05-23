@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Profile</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+    integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="./style/userProfile.css">
+<link rel="stylesheet" href="./style/modal.css">
+
+<style>
+    .modal-content {
+        width: 80%; /* Adjust the width as needed */
+        margin: 10% auto; /* Center the modal vertically and horizontally */
+        padding: 20px;
+        background-color: #fefefe;
+        border: 1px solid #888;
+        border-radius: 10px;
+        position: relative;
+    }
+
+    .modal-content h2 {
+        text-align: center;
+    }
+
+    .modal-content p {
+        text-align: center;
+    }
+</style>
+
+</head>
+
+<body>
+
+<a href="./UserDashboard.html" style="position: absolute; top: 10px; left: 10px;"><Button>back</Button></a>
+
+<div class="navbar">
+    <a href="UserDashboard.html"><button class="back">&#8592;</button></a>
+    <h1>Profile</h1>
+</div>
+
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Change Password</h2>
+        <form onsubmit="return PasswordUpdate(this)">
+            <label for="oldPassword">Old Password</label>
+            <input type="password" id="oldPassword" name="oldPassword">
+            <label for="newPassword">New Password</label>
+            <input type="password" id="newPassword" name="newPassword">
+            <label for="confirmPassword">Confirm New Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword">
+            <input type="submit" value="Change Password">
+        </form>
+    </div>
+</div>
+
+<div id="certificateModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="certificateContent"></div>
+    </div>
+</div>
+
+<form id="updateForm" onsubmit="return update(this)">
+    <div class="Profile-pic">
+        <img src="" alt="">
+    </div>
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" required>
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username" required>
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" required>
+    <label for="profilepic">Upload your Profile Pic</label>
+    <input type="file" id="profilepic" name="profilepic">
+    <input type="submit" value="Confirm">
+    <button type="button" id="myBtn">Change Password</button>
+    <button type="button" id="viewCertificateBtn">View Certificate</button>
+    <button type="button" class="delete" onclick="deleteAccount()">Delete Account</button>
+</form>
+
+<script>
+    // Fetch user data and populate the form
+    $.ajax({
+        url: "../userbackend/getUserData.php",
+        method: "GET",
+        dataType: "json",
+        success: function (userData) {
+            console.log(userData);
+            let id = userData.id;
+            let name = userData.name;
+            let username = userData.username;
+            let email = userData.email;
+            let profilepic = userData.profilepic;
+            $('img').attr('src', profilepic);
+            $('#name').val(name);
+            $('#username').val(username);
+            $('#email').val(email);
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+            alert("Failed to fetch user data.");
+        }
+    });
+
+    // Function to handle password update
+    function PasswordUpdate(form) {
+        $.ajax({
+            url: "../userbackend/userPass.php",
+            data: {
+                OldPassword: $(form).find('#oldPassword').val(),
+                newPassword: $(form).find('#newPassword').val(),
+                confirmPassword: $(form).find('#confirmPassword').val(),
+            },
+            success: function (response) {
+                console.log(response);
+                alert(response); // Show an alert for feedback
+                if (response == "Password updated successfully.") {
+                    modal.style.display = "none";
+                }
+            }
+        });
+        return false;
+    }
+
+    // Function to handle user data update
+    function update(form) {
+        event.preventDefault(); // Prevent default form submission
+        var formData = new FormData(form); // Use the form parameter passed to the function
+        formData.append('name', $(form).find('#name').val());
+        formData.append('username', $(form).find('#username').val());
+        formData.append('email', $(form).find('#email').val());
+        $.ajax({
+            url: "../userbackend/userUpdate.php",
+            method: "POST", // Specify the method
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                console.log(response);
+                alert(response);
+                window.location.reload();
+            }
+        });
+        return false; // Prevent form submission
+    }
+
+    // Function to delete user account
+    function deleteAccount() {
+        if (confirm("Are you sure you want to delete?")) {
+            $.ajax({
+                url: "../userbackend/DeleteAccount.php",
+                success: function (response) {
+                    console.log(response);
+                    alert(response);
+                    if (response.includes("deleted successfully")) {
+                        window.location.href = "../LandingPage/index.html";
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                    alert("Failed to delete account.");
+                }
+            });
+            return false; // Prevent form submission
+        }
+    }
+
+    // JavaScript for Certificate Modal
+    $(document).ready(function () {
+        var certificateModal = document.getElementById("certificateModal");
+        var btn = document.getElementById("viewCertificateBtn");
+        var span = certificateModal.getElementsByClassName("close")[0];
+
+        // When the user clicks the button, open the modal 
+        btn.onclick = function () {
+            $.ajax({
+                url: "CERTIFICATE.html",
+                method: "GET",
+                success: function (data) {
+                    var tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = data;
+                    tempDiv.querySelector('#user-name').innerText = $('#name').val();
+                    $("#certificateContent").html(tempDiv.innerHTML);
+                    certificateModal.style.display = "block";
+                },
+                error: function (xhr, status, error) {
+                    alert("Failed to load the certificate.");
+                }
+            });
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            certificateModal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == certificateModal) {
+                certificateModal.style.display = "none";
+            }
+        }
+    });
+</script>
+
+<script src="./scripts/modal.js"></script>
+</body>
+
+</html>

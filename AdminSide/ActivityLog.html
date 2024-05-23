@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Activity Log</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #222;
+            color: #fff;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .filter-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        #activityLogTable {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #333;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        #activityLogTable th,
+        #activityLogTable td {
+            border-bottom: 1px solid #555;
+            padding: 12px;
+            text-align: left;
+            color: #fff;
+        }
+
+        #activityLogTable th {
+            background-color: #444;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        #activityLogTable tbody tr:nth-child(even) {
+            background-color: #555;
+        }
+
+        #activityLogTable tbody tr:hover {
+            background-color: #666;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        select,
+        input[type="date"] {
+            margin: 0 10px;
+            padding: 5px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="./AdminDashBoard.html" style="position: absolute; top: 10px; left: 10px"><button>Back</button></a>
+    <h1>Activity Log</h1>
+
+<div class="filter-container">
+    <select id="filter">
+        <option value="all">View All</option>
+        <option value="day">Per Day</option>
+        <option value="week">Per Week</option>
+        <option value="month">Per Month</option>
+        <option value="year">Per Year</option>
+        <option value="custom">Custom Date</option>
+    </select>
+    <input type="text" id="startDate" style="display:none;">
+    <input type="text" id="endDate" style="display:none;">
+</div>
+
+
+    <table id="activityLogTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Message</th>
+                <th style="text-align: center;">Date <br> (mm/dd/yyyy/) </th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+    $(document).ready(function () {
+            $('#filter').change(handleFilterChange);
+            $('#startDate, #endDate').change(fetchActivityLog);
+            fetchActivityLog();  
+        });
+
+        function handleFilterChange() {
+            const selectedFilter = $(this).val();
+            if (selectedFilter === 'custom') {
+                $('#startDate, #endDate').show();
+            } else {
+                $('#startDate, #endDate').hide();
+                fetchActivityLog();
+            }
+        }
+
+        function fetchActivityLog() {
+            const selectedFilter = $('#filter').val();
+            const startDate = $('#startDate').val();
+            const endDate = $('#endDate').val();
+
+            const data = {
+                filter: selectedFilter
+            };
+
+            if (selectedFilter === 'custom') {
+                if (startDate && endDate) {
+                    data.startDate = startDate;
+                    data.endDate = endDate;
+                } else {
+                    if ($('#startDate').is(':visible') && (!startDate || !endDate)) {
+                        // alert('Please select both start and end dates for custom filtering.');
+                        return; 
+                    }
+                }
+            }
+
+            $.ajax({
+                url: "../AdminPHP/DisplayActivityLog.php",
+                type: "POST",
+                data: data,
+                dataType: "json",
+                success: function (response) {
+                    if (response.error) {
+                        alert(response.error);
+                    } else {
+                        displayLogs(response);
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error("Error:", textStatus, errorThrown);
+                    alert("An error occurred while fetching the activity log: " + textStatus + " - " + errorThrown);
+                }
+            });
+        }
+
+        function displayLogs(logs) {
+            const tableBody = $("#activityLogTable tbody");
+            tableBody.empty();
+
+            logs.forEach(function (log) {
+                const row = `
+            <tr>
+                <td>${log.id}</td>
+                <td>${log.message}</td>
+                <td style="text-align: center;" >${log.date}</td>
+            </tr>
+        `;
+                tableBody.append(row);
+            });
+        }
+
+
+    </script>
+</body>
+
+</html>

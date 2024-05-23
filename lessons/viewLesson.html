@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Lesson</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        #addContentFormContainer, #editContentFormContainer {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="lessonData"></div>
+
+    <button id="toggleAddContentButton">Add New Content</button>
+    <div id="addContentFormContainer">
+        <h3>Add New Content</h3>
+        <form id="addContentForm">
+            <label for="newTitle">Title:</label><br>
+            <input type="text" id="newTitle" name="newTitle" required><br>
+            <label for="newDescription">Description:</label><br>
+            <input type="text" id="newDescription" name="newDescription" required><br><br>
+            <button type="submit">Add Content</button>
+        </form>
+    </div>
+
+    <div id="editContentFormContainer">
+        <h3>Edit Content</h3>
+        <form id="editContentForm">
+            <label for="editTitle">Title:</label><br>
+            <input type="text" id="editTitle" name="editTitle" required><br>
+            <label for="editDescription">Description:</label><br>
+            <input type="text" id="editDescription" name="editDescription" required><br><br>
+            <input type="hidden" id="editContentIndex">
+            <button type="submit">Update Content</button>
+        </form>
+    </div>
+
+    <button id="makeAssessmentButton">Make an Assessment</button>
+
+    <button id="makeQuizButton">Make a Quiz</button>
+
+    <button><a href="../lessons/lesson.html">View all Lessons</a></button>
+    <script>
+        $(document).ready(function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const lessonId = urlParams.get('id');
+
+            function displayLesson(data) {
+                const xmlData = $(data);
+                const lesson = xmlData.find(`lesson:has(id:contains(${lessonId}))`);
+
+                if (lesson.length > 0) {
+                    let htmlContent = `<h2>${lesson.find("lessontitle").text()}</h2>`;
+                    htmlContent += '<table border="1">';
+                    htmlContent += '<tr><th>Title</th><th>Description</th><th>Action</th></tr>';
+                    lesson.find("content").each(function(index) {
+                        const title = $(this).find("title").text();
+                        const description = $(this).find("description").text();
+                        htmlContent += `<tr>
+                                            <td>${title}</td>
+                                            <td>${description}</td>
+                                            <td>
+                                                <button class="editContentButton" data-index="${index}">Edit</button>
+                                                <button class="deleteContentButton" data-index="${index}">Delete</button>
+                                            </td>
+                                        </tr>`;
+                    });
+                    htmlContent += '</table>';
+                    $("#lessonData").html(htmlContent);
+                } else {
+                    $("#lessonData").html('<p>Lesson not found.</p>');
+                }
+
+                // Attach click event handler for edit and delete buttons
+                $(".editContentButton").click(function() {
+                    const index = $(this).data("index");
+                    showEditForm(index);
+                });
+
+                $(".deleteContentButton").click(function() {
+                    const index = $(this).data("index");
+                    deleteContent(index);
+                });
+
+                $("#makeAssessmentButton").click(function() {
+                    window.location.href = `assessment.html?id=${lessonId}`;
+                });
+
+                $("#makeQuizButton").click(function() {
+                    window.location.href = `quiz.html?id=${lessonId}`;
+                });
+            }
+
+            function deleteContent(contentIndex) {
+                $.get("lesson.xml", function(data) {
+                    const xmlData = $(data);
+                    const lessonToUpdate = xmlData.find(`lesson:has(id:contains(${lessonId}))`);
+
+                    if (lessonToUpdate.length > 0) {
+                        const contents = lessonToUpdate.find("content");
+                        if (contentIndex < contents.length) {
+                            contents.eq(contentIndex).remove();
+
+                            // Save the updated XML data
+                            $.post("save_xml.php", { xmlData: new XMLSerializer().serializeToString(data) })
+                                .done(() => {
+                                    console.log("XML data saved successfully.");
+                                    displayLesson(data);
+                                })
+                                .fail((xhr, status, error) => console.error(`Error saving XML data: ${error}`));
+                        } else {
+                            alert("Content not found.");
+                        }
+                    } else {
+                        alert("Lesson not found with the specified ID.");
+                    }
+                });
+            }
+
+            function showEditForm(contentIndex) {
+                $.get("lesson.xml", function(data) {
+                    const xmlData = $(data);
+                    const lessonToUpdate = xmlData.find(`lesson:has(id:contains(${lessonId}))`);
+
+                    if (lessonToUpdate.length > 0) {
+                        const contentToEdit = lessonToUpdate.find("content").eq(contentIndex);
+                        $("#editTitle").val(contentToEdit.find("title").text());
+                        $("#editDescription").val(contentToEdit.find("description").text());
+                        $("#editContentIndex").val(contentIndex);
+                        $("#editContentFormContainer").show();
+                    } else {
+                        alert("Lesson not found with the specified ID.");
+                    }
+                });
+            }
+
+            $("#editContentForm").submit(function(event) {
+                event.preventDefault();
+
+                const contentIndex = $("#editContentIndex").val();
+                const newTitle = $("#editTitle").val();
+                const newDescription = $("#editDescription").val();
+
+                $.get("lesson.xml", function(data) {
+                    const xmlData = $(data);
+                    const lessonToUpdate = xmlData.find(`lesson:has(id:contains(${lessonId}))`);
+
+                    if (lessonToUpdate.length > 0) {
+                        const contentToUpdate = lessonToUpdate.find("content").eq(contentIndex);
+                        contentToUpdate.find("title").text(newTitle);
+                        contentToUpdate.find("description").text(newDescription);
+
+                        // Save the updated XML data
+                        $.post("save_xml.php", { xmlData: new XMLSerializer().serializeToString(data) })
+                            .done(() => {
+                                console.log("XML data updated successfully.");
+                                displayLesson(data);
+                                $("#editContentFormContainer").hide();
+                                $("#editTitle, #editDescription").val('');
+                            })
+                            .fail((xhr, status, error) => console.error(`Error updating XML data: ${error}`));
+                    } else {
+                        alert("Lesson not found with the specified ID.");
+                    }
+                });
+            });
+
+           
+            $.get(`lesson.xml?_=${new Date().getTime()}`, function(data) {
+                displayLesson(data);
+            });
+
+            $("#addContentForm").submit(function(event) {
+                event.preventDefault();
+
+                const newTitle = $("#newTitle").val();
+                const newDescription = $("#newDescription").val();
+
+                if (newTitle && newDescription) {
+                    $.get("lesson.xml", function(data) {
+                        const xmlData = $(data);
+                        const lessonToUpdate = xmlData.find(`lesson:has(id:contains(${lessonId}))`);
+
+                        if (lessonToUpdate.length > 0) {
+                            const newContent = $(`<content><title>${newTitle}</title><description>${newDescription}</description></content>`);
+                            lessonToUpdate.append(newContent);
+
+                            // Save the updated XML data
+                            $.post("save_xml.php", { xmlData: new XMLSerializer().serializeToString(data) })
+                                .done(() => {
+                                    console.log("XML data saved successfully.");
+                                    displayLesson(data);
+                                    $("#newTitle, #newDescription").val('');
+                                })
+                                .fail((xhr, status, error) => console.error(`Error saving XML data: ${error}`));
+                        } else {
+                            alert("Lesson not found with the specified ID.");
+                        }
+                    });
+                } else {
+                    alert("Please fill in both fields.");
+                }
+            });
+
+            $("#toggleAddContentButton").click(function() {
+                $("#addContentFormContainer").toggle();
+            });
+        });
+    </script>
+</body>
+</html>

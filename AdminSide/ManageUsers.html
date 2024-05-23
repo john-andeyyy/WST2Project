@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Users</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./style/Manageusers.css">
+    <link rel="stylesheet" href="./style/modal.css">
+</head>
+
+<body>
+    <div class="navbar">
+        <a href="AdminDashBoard.html"><button class="back">&#8592;</button></a>
+        <h1>Account Information</h1>
+    </div>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit User</h2>
+            <form id="updateForm" onsubmit="return update(this)">
+                <div class="Profile-pic">
+                    <img src="" alt="Profile Picture" width="50">
+                </div>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+
+    <h1>Account Information</h1>
+    <table id="accountTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Profile Picture</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        $(document).ready(function () {
+            fetchAccounts();
+        });
+
+        function fetchAccounts() {
+            $.ajax({
+                url: "../AdminPHP/GetAllUsers.php",
+                method: "GET",
+                dataType: "xml",
+                success: function (response) {
+                    const accounts = $(response).find("account");
+                    const tableBody = $("#accountTable tbody");
+
+                    accounts.each(function () {
+                        const id = $(this).attr("id");
+                        const username = $(this).find("username").text();
+                        const password = $(this).find("password").text();
+                        const name = $(this).find("name").text();
+                        const email = $(this).find("email").text();
+                        const profilepic = $(this).find("profilepic").text();
+
+                        const row = `
+                            <tr>
+                                <td>${id}</td>
+                                <td>${username}</td>
+                                <td>${password}</td>
+                                <td>${name}</td>
+                                <td>${email}</td>
+                                <td><img src="${profilepic}" alt="Profile Picture" width="50"></td>
+                                <td><button onclick="editAccount('${id}', '${username}', '${password}', '${name}', '${email}')">Edit</button></td>
+                            </tr>
+                        `;
+
+                        tableBody.append(row);
+                    });
+                }
+            });
+        }
+
+        function editAccount(id, username, password, name, email) {
+            $("#myModal").show();
+            $("#id").text(id);
+            $("#name").val(name);
+            $("#username").val(username);
+            $("#password").val(password);
+            $("#email").val(email);
+        }
+
+        $(".close").click(function () {
+            $("#myModal").hide();
+        });
+
+        function update(form) {
+            event.preventDefault();
+            var formData = new FormData(form);
+            formData.append("id", $("#id").text());
+            formData.append("name", $("#name").val());
+            formData.append("username", $("#username").val());
+            formData.append("password", $("#password").val());
+            formData.append("email", $("#email").val());
+
+            $.ajax({
+                url: "../AdminPHP/UserUpdate.php",
+                method: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    console.log(response);
+                    alert(response);
+                    if (response == "Account updated successfully.") {
+                        window.location.reload();
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error("Error:", errorThrown);
+                    alert("An error occurred while updating the account.");
+                }
+            });
+            return false;
+        }
+    </script>
+
+    <script src="./scripts/modal.js"></script>
+</body>
+</html>

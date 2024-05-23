@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Content Management</title>
+</head>
+<body>
+    <div id="lessonButtons"></div>
+    <div id="lessonDetails"></div>
+
+    <h3>Add New Content</h3>
+    <form id="contentForm">
+        <label for="lessonTitle">Lesson Title:</label><br>
+        <input type="text" id="lessonTitle" name="lessonTitle" required><br>
+        <label for="title">Content Title:</label><br>
+        <input type="text" id="title" name="title" required><br>
+        <label for="description">Description:</label><br>
+        <input type="text" id="description" name="description" required><br><br>
+        <button type="submit">Add Content</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadLessons);
+
+        function loadLessons() {
+            fetch('read_lessons.php')
+                .then(response => response.json())
+                .then(data => {
+                    displayLessonButtons(data.lesson);
+                });
+        }
+
+        function displayLessonButtons(lessons) {
+            const lessonButtonsDiv = document.getElementById('lessonButtons');
+            lessonButtonsDiv.innerHTML = '';
+
+            lessons.forEach(lesson => {
+                const button = document.createElement('button');
+                button.innerText = lesson.lessontitle;
+                button.onclick = () => displayLessonDetails(lesson);
+                lessonButtonsDiv.appendChild(button);
+            });
+        }
+
+        function displayLessonDetails(lesson) {
+            const lessonDetailsDiv = document.getElementById('lessonDetails');
+            lessonDetailsDiv.innerHTML = '<h3>Lesson Details</h3>';
+
+            lesson.content.forEach(content => {
+                lessonDetailsDiv.innerHTML += `<p><strong>${content.title}:</strong> ${content.description}</p>`;
+            });
+        }
+
+        document.getElementById('contentForm').addEventListener('submit', addLesson);
+
+        function addLesson(event) {
+            event.preventDefault();
+
+            const formData = new FormData(document.getElementById('contentForm'));
+
+            fetch('add_lesson.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    loadLessons();
+                } else {
+                    alert('Failed to add lesson');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

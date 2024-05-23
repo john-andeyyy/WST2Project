@@ -1,0 +1,12 @@
+<Admins>
+    <admin id="0">
+        <username>admin123</username>
+        <password>admin123</password>
+        <email>admin_email@example.com</email>
+    </admin>
+    <admin id="0">
+        <username>2</username>
+        <password>2</password>
+        <email>admin_email@example.com</email>
+    </admin>
+</Admins>
